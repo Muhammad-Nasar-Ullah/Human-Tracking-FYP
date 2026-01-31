@@ -1,0 +1,638 @@
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FYP Visualization | Neural Perception</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&amp;family=Inter:wght@300;400;500&amp;display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                    },
+                    colors: {
+                        obsidian: '#050507',
+                        charcoal: '#0a0a0c',
+                        glass: 'rgba(255, 255, 255, 0.03)',
+                        glassHover: 'rgba(255, 255, 255, 0.08)',
+                        border: 'rgba(255, 255, 255, 0.1)',
+                        neon: '#6366f1', // Indigo
+                        cyan: '#06b6d4', // Cyan
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050507;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #050507;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+
+        /* ThreeJS Canvas Background */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Utility Utilities */
+        .glass-panel {
+            background: rgba(10, 10, 12, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+        }
+
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #6366f1;
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: #6366f1;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-neon selection:text-white">
+
+    <!-- Three.js Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 border-b border-border bg-obsidian/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div
+                    class="w-8 h-8 bg-gradient-to-br from-neon to-cyan rounded-lg flex items-center justify-center text-white font-mono text-xs tracking-tighter">
+                    NP
+                </div>
+                <span class="font-mono text-sm tracking-tight text-gray-300">NEURAL PERCEPTION</span>
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-xs font-medium text-gray-400 tracking-wide uppercase">
+                <a href="#model" class="hover:text-white transition-colors duration-300">Selection</a>
+                <a href="#architecture" class="hover:text-white transition-colors duration-300">Architecture</a>
+                <a href="#justification" class="hover:text-white transition-colors duration-300">Analysis</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-[10px] text-gray-500 font-mono hidden sm:block">SYS: ONLINE</span>
+                <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="relative pt-24 pb-20 px-6 max-w-7xl mx-auto flex flex-col gap-24">
+
+        <!-- Hero Section -->
+        <header class="flex flex-col items-center justify-center min-h-[60vh] text-center relative">
+            <div class="absolute inset-0 bg-gradient-radial from-neon/10 to-transparent opacity-30 blur-3xl -z-10">
+            </div>
+
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-white/5 backdrop-blur-sm mb-6">
+                <iconify-icon icon="solar:camera-square-linear" class="text-neon" stroke-width="1.5"></iconify-icon>
+                <span class="text-xs font-medium text-gray-300 tracking-wide">OBJECT DETECTION MODULE</span>
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-medium tracking-tight mb-6 text-gradient font-mono">
+                FYP Visualization<br>Human Detection
+            </h1>
+
+            <p class="text-gray-400 text-lg max-w-2xl font-light leading-relaxed mb-10">
+                Leveraging state-of-the-art Deep Learning architectures to identify and classify human movement patterns
+                in real-time video streams.
+            </p>
+
+            <div class="flex items-center gap-4">
+                <button
+                    class="group relative px-6 py-3 bg-white text-black text-sm font-medium rounded-lg hover:bg-gray-100 transition-all overflow-hidden">
+                    <span class="relative z-10 flex items-center gap-2">
+                        View Architecture
+                        <iconify-icon icon="solar:arrow-right-linear" stroke-width="1.5"></iconify-icon>
+                    </span>
+                </button>
+                <button
+                    class="px-6 py-3 border border-border text-gray-300 text-sm font-medium rounded-lg hover:bg-white/5 transition-all">
+                    Dataset Specs
+                </button>
+            </div>
+        </header>
+
+        <!-- Section 2: Live Tracking Dashboard (Immersive) -->
+        <section id="dashboard" class="w-full">
+            <div class="flex items-center gap-3 mb-6 text-neon px-1">
+                <iconify-icon icon="solar:videocamera-record-linear" width="24" stroke-width="1.5"></iconify-icon>
+                <h2 class="text-xl font-medium tracking-tight text-white">Live Surveillance Feed</h2>
+            </div>
+
+            <!-- Main Video Container -->
+            <div id="videoContainer"
+                class="relative group bg-obsidian rounded-2xl overflow-hidden border border-border/50 shadow-2xl ring-1 ring-white/5 aspect-video md:aspect-[16/9]">
+
+                <!-- 1. Live Stream -->
+                <div class="w-full h-full relative">
+                    <img id="videoStream" src="http://127.0.0.1:8000/video?video=1.mp4"
+                        class="w-full h-full object-contain bg-black" alt="Live Video Feed" />
+
+                    <!-- Decorative Grid -->
+                    <div
+                        class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] pointer-events-none">
+                    </div>
+                </div>
+
+                <!-- 2. Stats Overlay (Top Right) -->
+                <div id="statsOverlay"
+                    class="absolute top-6 right-6 flex flex-col gap-2 z-20 transition-opacity duration-300">
+                    <div
+                        class="flex flex-col bg-black/50 backdrop-blur-md border border-white/10 rounded-lg p-3 min-w-[120px]">
+                        <span class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Entered</span>
+                        <div class="flex items-end gap-2">
+                            <span id="inCountDisplay" class="text-2xl font-mono text-neon leading-none">0</span>
+                            <iconify-icon icon="solar:login-2-linear" class="text-neon/50 mb-0.5"
+                                width="16"></iconify-icon>
+                        </div>
+                    </div>
+                    <div
+                        class="flex flex-col bg-black/50 backdrop-blur-md border border-white/10 rounded-lg p-3 min-w-[120px]">
+                        <span class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Exited</span>
+                        <div class="flex items-end gap-2">
+                            <span id="outCountDisplay" class="text-2xl font-mono text-cyan leading-none">0</span>
+                            <iconify-icon icon="solar:logout-2-linear" class="text-cyan/50 mb-0.5"
+                                width="16"></iconify-icon>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Header Info (Top Left) -->
+                <div class="absolute top-6 left-6 z-20 flex items-center gap-4 transition-opacity duration-300"
+                    id="headerInfo">
+                    <div
+                        class="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 backdrop-blur-md rounded-full border border-red-500/20">
+                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                        <span class="text-[10px] font-bold text-red-400 tracking-wide uppercase">Live</span>
+                    </div>
+                    <div
+                        class="px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-xs font-mono text-gray-300">
+                        1024x576 • 30FPS
+                    </div>
+                </div>
+
+                <!-- 4. Floating Controls Bar (Bottom) - Auto Hides -->
+                <div id="videoControls"
+                    class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-30 transition-all duration-500 translate-y-0 opacity-100">
+                    <div class="flex items-end justify-between gap-8">
+
+                        <!-- Left: Controls -->
+                        <div
+                            class="flex items-center gap-6 w-full max-w-2xl bg-black/40 backdrop-blur-xl border border-white/10 p-4 rounded-xl">
+
+                            <!-- Source Select -->
+                            <div class="flex flex-col gap-1.5">
+                                <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Video
+                                    Source</label>
+                                <select id="videoSelect" onchange="changeVideo()"
+                                    class="bg-white/5 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neon focus:bg-white/10 transition-all cursor-pointer min-w-[180px]">
+                                    <option value="1.mp4">Store Entry (Cam 1)</option>
+                                    <option value="2.mp4">Corridor (Cam 2)</option>
+                                    <option value="3.mp4">Mall Exit (Cam 3)</option>
+                                </select>
+                            </div>
+
+                            <div class="h-8 w-px bg-white/10"></div>
+
+                            <!-- Line Slider -->
+                            <div class="flex flex-col gap-1.5 flex-1">
+                                <div
+                                    class="flex justify-between items-center text-[10px] uppercase font-bold tracking-wider text-gray-400">
+                                    <span>Threshold Line</span>
+                                    <span id="lineValue" class="text-neon font-mono">300px</span>
+                                </div>
+                                <input type="range" id="lineYSlider" min="50" max="600" value="300"
+                                    class="w-full h-1 bg-gray-700 rounded-full appearance-none cursor-pointer accent-neon hover:accent-neon/80 transition-all"
+                                    oninput="updateLineVal(this.value)" onchange="updateLinePos(this.value)">
+                            </div>
+                        </div>
+
+                        <!-- Right: Actions -->
+                        <div class="flex items-center gap-3">
+                            <button onclick="toggleFullscreen()"
+                                class="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all text-white group"
+                                title="Fullscreen">
+                                <iconify-icon icon="solar:maximize-square-linear" width="20"
+                                    class="group-hover:scale-110 transition-transform"></iconify-icon>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 3: Model Definition (Architecture) -->
+        <section id="architecture" class="relative">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-border pb-6">
+                <div>
+                    <h2 class="text-2xl font-medium tracking-tight text-white mb-2">Internal Structure</h2>
+                    <p class="text-gray-400 text-sm">Component breakdown of the YOLOv8 pipeline.</p>
+                </div>
+                <div class="flex gap-2 mt-4 md:mt-0">
+                    <span class="w-3 h-3 rounded-full bg-gray-600" title="Backbone"></span>
+                    <span class="w-3 h-3 rounded-full bg-neon" title="Neck"></span>
+                    <span class="w-3 h-3 rounded-full bg-cyan" title="Head"></span>
+                </div>
+            </div>
+
+            <!-- Architecture Diagram -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 relative">
+                <!-- Connecting Line (Desktop) -->
+                <div
+                    class="hidden lg:block absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-neon/50 to-transparent -translate-y-1/2 z-0">
+                </div>
+
+                <!-- Input Layer -->
+                <div
+                    class="glass-panel p-6 rounded-xl border border-border z-10 hover:border-white/30 transition-colors">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-mono text-gray-500">01</span>
+                        <iconify-icon icon="solar:import-linear" class="text-gray-400"></iconify-icon>
+                    </div>
+                    <h4 class="text-lg font-medium text-white mb-2">Input Layer</h4>
+                    <ul class="text-xs text-gray-400 space-y-2 font-mono">
+                        <li class="flex items-center gap-2"><span class="w-1 h-1 bg-gray-500 rounded-full"></span>Mosaic
+                            Augmentation</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1 h-1 bg-gray-500 rounded-full"></span>Adaptive Anchor Size</li>
+                        <li class="flex items-center gap-2"><span
+                                class="w-1 h-1 bg-gray-500 rounded-full"></span>Normalization (640x640)</li>
+                    </ul>
+                </div>
+
+                <!-- Feature Extractor (Backbone) -->
+                <div
+                    class="glass-panel p-6 rounded-xl border border-neon/30 bg-neon/5 z-10 hover:bg-neon/10 transition-colors">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-mono text-neon">02</span>
+                        <iconify-icon icon="solar:structure-linear" class="text-neon"></iconify-icon>
+                    </div>
+                    <h4 class="text-lg font-medium text-white mb-2">Backbone</h4>
+                    <p class="text-xs text-gray-400 mb-3">Modified CSPDarknet53</p>
+                    <div class="h-1 w-full bg-gray-800 rounded-full overflow-hidden mb-3">
+                        <div class="h-full w-3/4 bg-neon"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Extracts hierarchical features using C2f modules, replacing C3 for richer gradient flow and
+                        reduced computation.
+                    </p>
+                </div>
+
+                <!-- Neck -->
+                <div
+                    class="glass-panel p-6 rounded-xl border border-cyan/30 bg-cyan/5 z-10 hover:bg-cyan/10 transition-colors">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-mono text-cyan">03</span>
+                        <iconify-icon icon="solar:link-circle-linear" class="text-cyan"></iconify-icon>
+                    </div>
+                    <h4 class="text-lg font-medium text-white mb-2">Neck</h4>
+                    <p class="text-xs text-gray-400 mb-3">PANet Architecture</p>
+                    <p class="text-xs text-gray-500 leading-relaxed">
+                        Path Aggregation Network. Fuses features from different scales (FPN + PAN) to detect humans of
+                        varying sizes/distances.
+                    </p>
+                </div>
+
+                <!-- Detection Head -->
+                <div
+                    class="glass-panel p-6 rounded-xl border border-border z-10 hover:border-white/30 transition-colors">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-mono text-gray-500">04</span>
+                        <iconify-icon icon="solar:scanner-linear" class="text-gray-400"></iconify-icon>
+                    </div>
+                    <h4 class="text-lg font-medium text-white mb-2">Decoupled Head</h4>
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <div class="text-center p-2 bg-white/5 rounded">
+                            <div class="text-[10px] text-gray-400">Class</div>
+                        </div>
+                        <div class="text-center p-2 bg-white/5 rounded">
+                            <div class="text-[10px] text-gray-400">Box</div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500">Anchor-free detection separating classification and regression
+                        tasks.</p>
+                </div>
+            </div>
+
+            <!-- Loss Functions Panel -->
+            <div class="mt-4 glass-panel p-6 rounded-xl border border-dashed border-border">
+                <div class="flex items-start gap-4">
+                    <div class="p-2 bg-white/5 rounded-lg">
+                        <iconify-icon icon="solar:graph-up-linear" class="text-white"></iconify-icon>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium text-white">Loss Functions</h4>
+                        <div class="flex flex-wrap gap-4 mt-2">
+                            <span class="text-xs text-gray-400 font-mono border border-border px-2 py-1 rounded">VFL
+                                (Varifocal Loss)</span>
+                            <span class="text-xs text-gray-400 font-mono border border-border px-2 py-1 rounded">DFL
+                                (Distribution Focal Loss)</span>
+                            <span class="text-xs text-gray-400 font-mono border border-border px-2 py-1 rounded">CIoU
+                                (Complete IoU)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Justification -->
+        <section id="justification" class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="order-2 md:order-1">
+                <!-- Custom Chart Visualization (CSS Only) -->
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h4 class="text-sm font-medium text-white mb-6">Performance Metrics Comparison</h4>
+                    <div class="space-y-4">
+                        <!-- Metric 1 -->
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-400">YOLOv8 (Selected)</span>
+                                <span class="text-neon font-mono">mAP 53.9%</span>
+                            </div>
+                            <div class="h-2 w-full bg-charcoal rounded-full overflow-hidden">
+                                <div class="h-full bg-neon w-[85%] rounded-full shadow-[0_0_10px_#6366f1]"></div>
+                            </div>
+                        </div>
+                        <!-- Metric 2 -->
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">Faster R-CNN</span>
+                                <span class="text-gray-500 font-mono">mAP 48.1%</span>
+                            </div>
+                            <div class="h-2 w-full bg-charcoal rounded-full overflow-hidden">
+                                <div class="h-full bg-gray-700 w-[65%] rounded-full"></div>
+                            </div>
+                        </div>
+                        <!-- Metric 3 -->
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">SSD MobileNet</span>
+                                <span class="text-gray-500 font-mono">mAP 32.4%</span>
+                            </div>
+                            <div class="h-2 w-full bg-charcoal rounded-full overflow-hidden">
+                                <div class="h-full bg-gray-700 w-[40%] rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-border flex justify-between items-center">
+                        <div>
+                            <div class="text-2xl font-mono text-white tracking-tight">120+</div>
+                            <div class="text-[10px] uppercase tracking-wide text-gray-500">FPS Inference</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-mono text-white tracking-tight">3.2<span
+                                    class="text-sm text-gray-500">ms</span></div>
+                            <div class="text-[10px] uppercase tracking-wide text-gray-500">Latency</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-mono text-white tracking-tight">SOTA</div>
+                            <div class="text-[10px] uppercase tracking-wide text-gray-500">Status</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-1 md:order-2">
+                <h2 class="text-3xl font-medium tracking-tight text-white mb-4">Why this specific architecture?</h2>
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <div class="mt-1">
+                            <div
+                                class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center border border-border">
+                                <iconify-icon icon="solar:videocamera-record-linear" class="text-white"
+                                    height="14"></iconify-icon>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="text-white font-medium text-sm">Temporal Efficiency</h5>
+                            <p class="text-gray-400 text-sm mt-1 leading-relaxed">
+                                Video processing requires consistent frame-to-frame tracking. YOLOv8's speed allows for
+                                identifying humans in every single frame without dropping data, crucial for movement
+                                analysis.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="mt-1">
+                            <div
+                                class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center border border-border">
+                                <iconify-icon icon="solar:box-minimalistic-linear" class="text-white"
+                                    height="14"></iconify-icon>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="text-white font-medium text-sm">Anchor-Free Detection</h5>
+                            <p class="text-gray-400 text-sm mt-1 leading-relaxed">
+                                Unlike previous iterations, v8 eliminates anchor boxes, reducing the number of
+                                hyperparameters and improving generalization on diverse human poses found in
+                                surveillance footage.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="mt-1">
+                            <div
+                                class="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center border border-border">
+                                <iconify-icon icon="solar:code-square-linear" class="text-white"
+                                    height="14"></iconify-icon>
+                            </div>
+                        </div>
+                        <div>
+                            <h5 class="text-white font-medium text-sm">Deployment Ready</h5>
+                            <p class="text-gray-400 text-sm mt-1 leading-relaxed">
+                                Native support for export to ONNX and TensorRT makes it ideal for the final FYP
+                                deployment stage, ensuring the visualization runs smoothly on standard hardware.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="border-t border-border pt-8 text-center">
+            <p class="text-xs text-gray-600 font-mono">FYP PROJECT • HUMAN DETECTION MODULE • 2023-2024</p>
+        </footer>
+
+    </main>
+
+    <!-- Three.js Implementation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('canvas-container');
+
+            // Scene Setup
+            const scene = new THREE.Scene();
+            // Fog to blend background
+            scene.fog = new THREE.FogExp2(0x050507, 0.002);
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Group for rotation
+            const group = new THREE.Group();
+            scene.add(group);
+
+            // 1. Central Neural Mesh (Icosahedron)
+            const geometry = new THREE.IcosahedronGeometry(10, 2);
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x6366f1,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15
+            });
+            const sphere = new THREE.Mesh(geometry, material);
+            group.add(sphere);
+
+            // 2. Floating Data Nodes (Particles)
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 700;
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for (let i = 0; i < particlesCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 80;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.15,
+                color: 0x06b6d4,
+                transparent: true,
+                opacity: 0.6,
+            });
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            group.add(particlesMesh);
+
+            // 3. Connecting Lines (Abstract Network)
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05 });
+            const lineGeometry = new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(12, 1));
+            const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+            group.add(lines);
+
+            // Mouse Interaction Logic
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetX = 0;
+            let targetY = 0;
+
+            const windowHalfX = window.innerWidth / 2;
+            const windowHalfY = window.innerHeight / 2;
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - windowHalfX);
+                mouseY = (event.clientY - windowHalfY);
+            });
+
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Animation Loop
+            const clock = new THREE.Clock();
+
+            function animate() {
+                const elapsedTime = clock.getElapsedTime();
+
+                targetX = mouseX * 0.001;
+                targetY = mouseY * 0.001;
+
+                // Smooth rotation following cursor
+                group.rotation.y += 0.05 * (targetX - group.rotation.y);
+                group.rotation.x += 0.05 * (targetY - group.rotation.x);
+
+                // Constant idle rotation
+                sphere.rotation.z += 0.002;
+                particlesMesh.rotation.y = -elapsedTime * 0.05;
+
+                // Pulsing effect
+                const scale = 1 + Math.sin(elapsedTime * 0.5) * 0.05;
+                sphere.scale.set(scale, scale, scale);
+
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        });
+    </script>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
