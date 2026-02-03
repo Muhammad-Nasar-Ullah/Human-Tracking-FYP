@@ -111,6 +111,22 @@
         .toggle-checkbox:checked+.toggle-label {
             background-color: #6366f1;
         }
+
+        /* Dark theme for select dropdowns */
+        select {
+            color-scheme: dark;
+        }
+
+        select option {
+            background-color: #1a1a1f;
+            color: #ffffff;
+            padding: 8px;
+        }
+
+        select option:hover,
+        select option:checked {
+            background-color: #6366f1;
+        }
     </style>
 </head>
 
@@ -135,8 +151,10 @@
                 <a href="#justification" class="hover:text-white transition-colors duration-300">Analysis</a>
             </div>
             <div class="flex items-center gap-3">
-                <span class="text-[10px] text-gray-500 font-mono hidden sm:block">SYS: ONLINE</span>
-                <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
+                <span id="connectionStatus" class="text-[10px] text-gray-500 font-mono hidden sm:block">SYS:
+                    CONNECTING...</span>
+                <div id="connectionIndicator"
+                    class="w-2 h-2 rounded-full bg-yellow-500 shadow-[0_0_10px_#eab308] animate-pulse"></div>
             </div>
         </div>
     </nav>
@@ -192,8 +210,16 @@
 
                 <!-- 1. Live Stream -->
                 <div class="w-full h-full relative">
-                    <img id="videoStream" src="http://127.0.0.1:8000/video?video=1.mp4"
-                        class="w-full h-full object-contain bg-black" alt="Live Video Feed" />
+                    <img id="videoStream" src="" class="w-full h-full object-contain bg-black" alt="Live Video Feed" />
+
+                    <!-- Loading Overlay -->
+                    <div id="loadingOverlay" class="absolute inset-0 bg-black/80 flex items-center justify-center z-10">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="w-10 h-10 border-2 border-neon border-t-transparent rounded-full animate-spin">
+                            </div>
+                            <span class="text-sm text-gray-400">Connecting to stream...</span>
+                        </div>
+                    </div>
 
                     <!-- Decorative Grid -->
                     <div
@@ -208,7 +234,8 @@
                         class="flex flex-col bg-black/50 backdrop-blur-md border border-white/10 rounded-lg p-3 min-w-[120px]">
                         <span class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Entered</span>
                         <div class="flex items-end gap-2">
-                            <span id="inCountDisplay" class="text-2xl font-mono text-neon leading-none">0</span>
+                            <span id="inCountDisplay"
+                                class="text-2xl font-mono text-neon leading-none transition-transform duration-200">0</span>
                             <iconify-icon icon="solar:login-2-linear" class="text-neon/50 mb-0.5"
                                 width="16"></iconify-icon>
                         </div>
@@ -217,7 +244,8 @@
                         class="flex flex-col bg-black/50 backdrop-blur-md border border-white/10 rounded-lg p-3 min-w-[120px]">
                         <span class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Exited</span>
                         <div class="flex items-end gap-2">
-                            <span id="outCountDisplay" class="text-2xl font-mono text-cyan leading-none">0</span>
+                            <span id="outCountDisplay"
+                                class="text-2xl font-mono text-cyan leading-none transition-transform duration-200">0</span>
                             <iconify-icon icon="solar:logout-2-linear" class="text-cyan/50 mb-0.5"
                                 width="16"></iconify-icon>
                         </div>
@@ -247,28 +275,27 @@
                         <div
                             class="flex items-center gap-6 w-full max-w-2xl bg-black/40 backdrop-blur-xl border border-white/10 p-4 rounded-xl">
 
-                            <!-- Source Select -->
+                            <!-- Source Select (Dynamically populated) -->
                             <div class="flex flex-col gap-1.5">
                                 <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Video
                                     Source</label>
                                 <select id="videoSelect" onchange="changeVideo()"
-                                    class="bg-white/5 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neon focus:bg-white/10 transition-all cursor-pointer min-w-[180px]">
-                                    <option value="1.mp4">Store Entry (Cam 1)</option>
-                                    <option value="2.mp4">Corridor (Cam 2)</option>
-                                    <option value="3.mp4">Mall Exit (Cam 3)</option>
+                                    class="bg-gray-900 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neon focus:bg-gray-800 transition-all cursor-pointer min-w-[180px]"
+                                    style="color-scheme: dark;">
+                                    <option value="" class="bg-gray-900 text-white">Loading videos...</option>
                                 </select>
                             </div>
 
                             <div class="h-8 w-px bg-white/10"></div>
 
-                            <!-- Line Slider -->
+                            <!-- Line Slider (Percentage: 5-95%) -->
                             <div class="flex flex-col gap-1.5 flex-1">
                                 <div
                                     class="flex justify-between items-center text-[10px] uppercase font-bold tracking-wider text-gray-400">
                                     <span>Threshold Line</span>
-                                    <span id="lineValue" class="text-neon font-mono">300px</span>
+                                    <span id="lineValue" class="text-neon font-mono">50%</span>
                                 </div>
-                                <input type="range" id="lineYSlider" min="50" max="600" value="300"
+                                <input type="range" id="lineYSlider" min="5" max="95" value="50"
                                     class="w-full h-1 bg-gray-700 rounded-full appearance-none cursor-pointer accent-neon hover:accent-neon/80 transition-all"
                                     oninput="updateLineVal(this.value)" onchange="updateLinePos(this.value)">
                             </div>
@@ -276,6 +303,12 @@
 
                         <!-- Right: Actions -->
                         <div class="flex items-center gap-3">
+                            <button onclick="resetCounters()"
+                                class="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all text-white group"
+                                title="Reset Counters">
+                                <iconify-icon icon="solar:refresh-linear" width="20"
+                                    class="group-hover:rotate-180 transition-transform duration-500"></iconify-icon>
+                            </button>
                             <button onclick="toggleFullscreen()"
                                 class="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all text-white group"
                                 title="Fullscreen">
