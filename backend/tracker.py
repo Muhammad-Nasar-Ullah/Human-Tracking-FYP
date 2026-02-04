@@ -6,7 +6,7 @@ Connects Detection, Tracking, Counting, and Visualization modules.
 import cv2
 import numpy as np
 import time
-from threading import Lock
+from threading import Lock, Event
 
 # Import new modules
 from detection import get_detector
@@ -40,7 +40,13 @@ class VideoTracker:
         self.original_height = 0
         self.fps = 30
         
+        self.current_frame = 0 # Initialize
+        
         self._lock = Lock()
+        
+        # Playback Control
+        self.paused = False
+        self.seek_frame = None # Frame index to seek to
 
     def set_line_position(self, y_percent: float):
         """Set line position as percentage of frame height."""
@@ -58,6 +64,21 @@ class VideoTracker:
         with self._lock:
             self.tracker = ByteTracker(frame_rate=self.fps) # Re-init tracker
             self.counter.reset()
+            self.paused = False
+            self.seek_frame = None
+
+    def pause(self):
+        self.paused = True
+        
+    def resume(self):
+        self.paused = False
+        
+    def seek(self, seconds: float):
+        """Relative seek in seconds (+/-)."""
+        if self.fps > 0:
+            offset = int(seconds * self.fps)
+            with self._lock:
+               self.seek_frame = self.current_frame + offset
 
     def get_video_info(self) -> dict:
         return {
@@ -94,10 +115,36 @@ class VideoTracker:
         print(f"[Tracker] Video: {self.original_width}x{self.original_height} @ {self.fps:.1f}fps")
         print(f"[Tracker] Processing at: {self.process_width}x{self.process_height}")
 
+        self.current_frame = 0 # Track current frame index shared
+        
         frame_idx = 0
         
         try:
             while True:
+                self.current_frame = frame_idx
+                
+                # Handle Seek
+                if self.seek_frame is not None:
+                    with self._lock:
+                        target_frame = max(0, self.seek_frame)
+                        cap.set(cv2.CAP_PROP_POS_FRAMES, target_frame)
+                        frame_idx = target_frame
+                        self.current_frame = frame_idx
+                        self.seek_frame = None
+                        # Optionally reset tracker state on large seek?
+                        # self.tracker = ByteTracker(frame_rate=self.fps) 
+
+                # Handle Pause
+                while self.paused:
+                    time.sleep(0.1)
+                    # Yield last frame or keep alive? 
+                    # MJPEG needs a frame to keep connection alive usually or just wait.
+                    # Best to yield the same frame again if possible, or just wait.
+                    # But if we wait too long, browser might timeout.
+                    # Simple approach: Check state every 0.1s.
+                    if self.seek_frame is not None:
+                        break # Break pause loop to handle seek
+                
                 ret, frame = cap.read()
 
                 if not ret:
@@ -191,6 +238,21 @@ def reset_counters():
     tracker = get_current_tracker()
     if tracker:
         tracker.reset()
+
+def pause_video():
+    tracker = get_current_tracker()
+    if tracker:
+        tracker.pause()
+
+def resume_video():
+    tracker = get_current_tracker()
+    if tracker:
+        tracker.resume()
+
+def seek_video(seconds: float):
+    tracker = get_current_tracker()
+    if tracker:
+        tracker.seek(seconds)
 
 def process_video(video_path: str):
     tracker = get_or_create_tracker(video_path, reset=True)

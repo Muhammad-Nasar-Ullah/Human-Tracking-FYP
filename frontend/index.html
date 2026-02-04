@@ -7,6 +7,7 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="shortcut icon" href="src/logo/favicon.png" type="image/png">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&amp;family=Inter:wght@300;400;500&amp;display=swap"
@@ -140,10 +141,10 @@
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <div
-                    class="w-8 h-8 bg-gradient-to-br from-neon to-cyan rounded-lg flex items-center justify-center text-white font-mono text-xs tracking-tighter">
-                    NP
+                    class="w-24 overflow-hidden h-24 rounded-lg flex items-center justify-center text-white font-mono text-xs tracking-tighter">
+                    <span><img src="src/logo/human-tracking-logo.jpg" alt=""></span>
                 </div>
-                <span class="font-mono text-sm tracking-tight text-gray-300">NEURAL PERCEPTION</span>
+                <span class="font-mono text-sm tracking-tight -ml-[1.5rem] text-gray-300">NEURAL PERCEPTION</span>
             </div>
             <div class="hidden md:flex items-center gap-8 text-xs font-medium text-gray-400 tracking-wide uppercase">
                 <a href="#model" class="hover:text-white transition-colors duration-300">Selection</a>
@@ -273,14 +274,14 @@
 
                         <!-- Left: Controls -->
                         <div
-                            class="flex items-center gap-6 w-full max-w-2xl bg-black/40 backdrop-blur-xl border border-white/10 p-4 rounded-xl">
+                            class="flex items-center gap-6 w-full bg-black/40 backdrop-blur-xl border border-white/10 p-4 rounded-xl">
 
                             <!-- Source Select (Dynamically populated) -->
                             <div class="flex flex-col gap-1.5">
                                 <label class="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Video
                                     Source</label>
                                 <select id="videoSelect" onchange="changeVideo()"
-                                    class="bg-gray-900 border border-white/10 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-neon focus:bg-gray-800 transition-all cursor-pointer min-w-[180px]"
+                                    class="bg-obsidian border border-neon/30 hover:border-neon/60 rounded px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-neon/50 focus:border-neon transition-all cursor-pointer min-w-[200px] shadow-[0_0_10px_rgba(99,102,241,0.1)] hover:shadow-[0_0_15px_rgba(99,102,241,0.2)]"
                                     style="color-scheme: dark;">
                                     <option value="" class="bg-gray-900 text-white">Loading videos...</option>
                                 </select>
@@ -299,27 +300,47 @@
                                     class="w-full h-1 bg-gray-700 rounded-full appearance-none cursor-pointer accent-neon hover:accent-neon/80 transition-all"
                                     oninput="updateLineVal(this.value)" onchange="updateLinePos(this.value)">
                             </div>
-                        </div>
 
-                        <!-- Right: Actions -->
-                        <div class="flex items-center gap-3">
-                            <button onclick="resetCounters()"
-                                class="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all text-white group"
-                                title="Reset Counters">
-                                <iconify-icon icon="solar:refresh-linear" width="20"
-                                    class="group-hover:rotate-180 transition-transform duration-500"></iconify-icon>
-                            </button>
-                            <button onclick="toggleFullscreen()"
-                                class="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all text-white group"
-                                title="Fullscreen">
-                                <iconify-icon icon="solar:maximize-square-linear" width="20"
-                                    class="group-hover:scale-110 transition-transform"></iconify-icon>
-                            </button>
+                            <!-- Playback Controls -->
+                            <div class="flex items-center gap-2">
+                                <button onclick="controlVideo('seek', -5)"
+                                    class="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-300 hover:text-white"
+                                    title="Rewind 5s">
+                                    <iconify-icon icon="solar:rewind-5-seconds-back-linear" width="24"></iconify-icon>
+                                </button>
+                                <button id="playPauseBtn" onclick="togglePlayPause()"
+                                    class="p-3 bg-neon hover:bg-neon/80 rounded-full transition-colors text-white shadow-lg shadow-neon/20"
+                                    title="Pause/Resume">
+                                    <iconify-icon icon="solar:pause-linear" width="24"
+                                        id="playPauseIcon"></iconify-icon>
+                                </button>
+                                <button onclick="controlVideo('seek', 5)"
+                                    class="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-300 hover:text-white"
+                                    title="Forward 5s">
+                                    <iconify-icon icon="solar:rewind-5-seconds-forward-linear"
+                                        width="24"></iconify-icon>
+                                </button>
+                            </div>
+
+                            <!-- Right: Actions -->
+                            <div class="flex items-center gap-3">
+                                <button onclick="resetCounters()"
+                                    class="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all text-white group"
+                                    title="Reset Counters">
+                                    <iconify-icon icon="solar:refresh-linear" width="20"
+                                        class="group-hover:rotate-180 transition-transform duration-500"></iconify-icon>
+                                </button>
+                                <button onclick="toggleFullscreen()"
+                                    class="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all text-white group"
+                                    title="Fullscreen">
+                                    <iconify-icon icon="solar:maximize-square-linear" width="20"
+                                        class="group-hover:scale-110 transition-transform"></iconify-icon>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-            </div>
+                </div>
         </section>
 
         <!-- Section 3: Model Definition (Architecture) -->

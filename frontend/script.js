@@ -97,8 +97,18 @@ function startConnectionMonitor() {
 
         // Reconnect stream if connection was restored
         if (!wasConnected && isConnected) {
-            console.log('[FYP] Connection restored, reloading stream...');
-            initVideoStream();
+            console.log('[FYP] Connection restored.');
+            
+            // If we don't have videos yet, it might be a fresh backend start. 
+            // Reloading creates a clean slate as requested.
+            const videoSelect = document.getElementById('videoSelect');
+            if (videoSelect && videoSelect.options.length <= 1) {
+                console.log('[FYP] Backend online, reloading to initialize...');
+                location.reload();
+            } else {
+                console.log('[FYP] Reloading stream...');
+                initVideoStream();
+            }
         }
     }, CONNECTION_CHECK_INTERVAL);
 }
@@ -416,5 +426,44 @@ async function resetCounters() {
         console.log('[FYP] Counters reset');
     } catch (e) {
         console.error('[FYP] Failed to reset counters:', e);
+    }
+}
+
+// =============================================================================
+// Playback Controls
+// =============================================================================
+
+let isPaused = false;
+
+async function togglePlayPause() {
+    isPaused = !isPaused;
+    const action = isPaused ? 'pause' : 'resume';
+    
+    // Update UI
+    const icon = document.getElementById('playPauseIcon');
+    if (icon) {
+        icon.setAttribute('icon', isPaused ? 'solar:play-linear' : 'solar:pause-linear');
+    }
+    
+    try {
+        await fetch(`${API_URL}/video/control/${action}`, { method: 'POST' });
+        console.log(`[FYP] Video ${action}d`);
+    } catch (e) {
+        console.error(`[FYP] Failed to ${action} video:`, e);
+    }
+}
+
+async function controlVideo(action, value) {
+    try {
+        if (action === 'seek') {
+            await fetch(`${API_URL}/video/control/seek`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ seconds: value })
+            });
+            console.log(`[FYP] Seeked ${value}s`);
+        }
+    } catch (e) {
+        console.error('[FYP] Control action failed:', e);
     }
 }

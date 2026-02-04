@@ -18,7 +18,10 @@ from tracker import (
     set_line_position,
     get_counts,
     get_current_tracker,
-    get_or_create_tracker
+    get_or_create_tracker,
+    pause_video,
+    resume_video,
+    seek_video
 )
 
 app = FastAPI(
@@ -109,7 +112,30 @@ def get_video_info():
 def update_line(settings: LineSettings):
     """Update counting line position as percentage of frame height (0-100)."""
     set_line_position(settings.line_percent)
+    set_line_position(settings.line_percent)
     return {"status": "ok", "line_percent": settings.line_percent}
+
+
+class SeekRequest(BaseModel):
+    seconds: float
+
+@app.post("/video/control/pause")
+def pause_stream():
+    """Pause video playback."""
+    pause_video()
+    return {"status": "paused"}
+
+@app.post("/video/control/resume")
+def resume_stream():
+    """Resume video playback."""
+    resume_video()
+    return {"status": "resumed"}
+
+@app.post("/video/control/seek")
+def seek_stream(request: SeekRequest):
+    """Seek video playback by relative seconds."""
+    seek_video(request.seconds)
+    return {"status": "seeking", "seconds": request.seconds}
 
 
 
