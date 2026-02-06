@@ -1,0 +1,11 @@
+Here is the correct workflow for a collaborator:
+
+They Clone the Code: They run git clone ... to get the code (including the requirements.txt I just added).
+They Create their OWN venv:
+python -m venv .venv
+..venv\Scripts\activate
+They Install Dependencies:
+pip install -r requirements.txt (This installs all the libraries you are using).
+They Add Videos:
+Since videos are excluded, they will have an empty backend/videos/ folder.
+Yes, you can send them the video files separately (via Drive, USB, etc.), OR they can simply drop any random mp4 file into backend/videos/ to test it.
