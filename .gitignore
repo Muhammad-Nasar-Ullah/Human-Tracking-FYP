@@ -1,0 +1,25 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Models / ML
+*.pt
+*.pth
+*.onnx
+*.weights
+
+# Data
+data/
+datasets/
+
+# Logs
+*.log
+
+# Large files
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+backend/videos/
